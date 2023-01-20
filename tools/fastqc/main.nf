@@ -16,7 +16,6 @@ workflow fastqc {
 
 // WORKFLOW: Execute a single named workflow for the wrapper
 // See: https://github.com/nf-core/rnaseq/issues/619
-
 workflow {
     fastqc()
 }
