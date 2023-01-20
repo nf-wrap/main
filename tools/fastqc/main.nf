@@ -5,18 +5,11 @@ nextflow.enable.dsl = 2
 include { FASTQC } from '../../modules/nf-core/fastqc/main.nf'
 
 workflow fastqc {
-    input = params.input ?: params.test_data['sarscov2']['illumina']['test_1_fastq_gz']
+    input = params.input ? Channel.fromPath(params.input) : params.test ? Channel.fromPath(params.test_data['sarscov2']['illumina']['test_1_fastq_gz']) : Channel.empty()
 
-    println "Input: " + input
+    input = input.map{ reads -> [ [ id:'test', single_end:true ], reads ]}
 
-    input = [
-                [ id:'test', single_end:true ], // meta map
-                [
-                    file(input, checkIfExists: true)
-                ]
-            ]
-
-    FASTQC ( input )
+    FASTQC(input)
 }
 
 workflow {
