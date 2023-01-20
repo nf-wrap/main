@@ -1,15 +1,19 @@
 repository_type: pipeline
 lint:
   files_exist:
-  - CODE_OF_CONDUCT.md
-  - assets/nf-core-main_logo_light.png
-  - docs/images/nf-core-main_logo_light.png
-  - docs/images/nf-core-main_logo_dark.png
-  - .github/ISSUE_TEMPLATE/config.yml
-  - .github/workflows/awstest.yml
-  - .github/workflows/awsfulltest.yml
+    - .github/ISSUE_TEMPLATE/config.yml
+    - .github/workflows/awsfulltest.yml
+    - .github/workflows/awstest.yml
+    - CODE_OF_CONDUCT.md
+    - assets/multiqc_config.yml
+    - assets/nf-core-main_logo_light.png
+    - conf/igenomes.config
+    - conf/test.config
+    - conf/test_full.config
+    - docs/images/nf-core-main_logo_dark.png
+    - docs/images/nf-core-main_logo_light.png
   nextflow_config:
-  - manifest.name
-  - manifest.homePage
-  multiqc_config:
-  - report_comment
+    - manifest.name
+    - manifest.homePage
+  files_unchanged:
+    - .github/workflows/branch.yml
