@@ -27,7 +27,7 @@ jobs:
           - "22.10.1"
           - "latest-everything"
         TEST:
-          - "FASTQC"
+          - "fastqc"
         profile:
           - "conda"
           - "docker"
@@ -43,4 +43,4 @@ jobs:
 
       - name: Run pipeline with test data
         run: |
-          nextflow run ${GITHUB_WORKSPACE}/tools/${{ matrix.TEST }} -profile docker,laptop --outdir ./results
+          nextflow run ${GITHUB_WORKSPACE}/tools/${{ matrix.TEST }} -profile ${{ matrix.profile }},laptop --outdir ./results
