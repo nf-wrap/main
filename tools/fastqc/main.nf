@@ -4,10 +4,13 @@ nextflow.enable.dsl = 2
 include { FASTQC } from '../../modules/nf-core/fastqc/main.nf'
 
 // get input file or test data
-input = params.input ? Channel.fromPath(params.input) : params.test ? Channel.fromPath(params.test_data['sarscov2']['illumina']['test_1_fastq_gz']) : Channel.empty()
+input = Channel.empty()
+if (params.input) input = Channel.fromFilePairs(params.input)
+else if (params.test) input = Channel.fromPath(params.test_data['sarscov2']['illumina']['test_1_fastq_gz']).map{ it -> ["test", it ] }
+else log.warn("No input data provided!")
 
 // remap input to fit the module
-input = input.map{ reads -> [ [ id:'test', single_end:true ], reads ]}
+input = input.map{ id, reads -> [ [ id:id ], reads ]}
 
 // WORKFLOW: wrapper
 workflow fastqc {
