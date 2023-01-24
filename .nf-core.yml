@@ -24,5 +24,4 @@ lint:
     - .github/ISSUE_TEMPLATE/feature_request.yml
     - .github/PULL_REQUEST_TEMPLATE.md
     - .gitignore
-  actions_ci:
-    False
+  actions_ci: False

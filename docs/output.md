@@ -7,7 +7,6 @@ This document describes the output produced by the tools.
 The directories listed below will be created in the results directory once finished.
 All paths are relative to the top-level results directory.
 
-
 ### FastQC
 
 <details markdown="1">
