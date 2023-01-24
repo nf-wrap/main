@@ -1,12 +1,10 @@
-name: nf-core CI
-# This workflow runs the pipeline with the minimal test dataset to check that it completes without any syntax errors
+name: nf-wrap CI
+# This workflow runs wrappers with minimal test dataset to check that it completes without any syntax errors
 on:
   push:
-    branches:
-      - dev
+    branches: [master]
   pull_request:
-  release:
-    types: [published]
+    branches: [master]
 
 env:
   NXF_ANSI_LOG: false
@@ -16,30 +14,42 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
-    name: Run pipeline with test data
-    # Only run on push if this is the nf-core dev branch (merged PRs)
-    if: "${{ github.event_name != 'push' || (github.event_name == 'push' && github.repository == 'nf-wrap/main') }}"
+  changes:
+    name: Check for changes
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        NXF_VER:
-          - "22.10.1"
-          - "latest-everything"
-        TEST:
-          - "fastqc"
-        profile:
-          - "conda"
-          - "docker"
-          - "singularity"
+    outputs:
+      # Expose matched filters as job 'wrap' output variable
+      wrap: ${{ steps.filter.outputs.changes }}
     steps:
-      - name: Check out pipeline code
+      - uses: actions/checkout@v3
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: "tests/config/tags.yml"
+  test:
+    runs-on: ubuntu-20.04
+
+    name: ${{ matrix.tags }} ${{ matrix.profile }}
+    needs: changes
+    if: needs.changes.outputs.wrap != '[]'
+    strategy:
+      fail-fast: false
+      matrix:
+        tags: ["${{ fromJson(needs.changes.outputs.wrap) }}"]
+        profile: ["docker", "singularity", "conda"]
+    steps:
+      - name: Check out code
         uses: actions/checkout@v3
 
-      - name: Install Nextflow ${{ matrix.NXF_VER }}
-        uses: nf-core/setup-nextflow@v1.2.0
+      - name: Install Nextflow
+        uses: nf-core/setup-nextflow@v1
         with:
           version: "${{ matrix.NXF_VER }}"
+
+      - name: Install nf-test
+        run: |
+          wget -qO- https://code.askimed.com/install/nf-test | bash
+          sudo mv nf-test /usr/local/bin/
 
       - name: Set up Singularity
         if: matrix.profile == 'singularity'
@@ -59,6 +69,14 @@ jobs:
         if: matrix.profile == 'conda'
         run: conda clean -a
 
-      - name: Run pipeline with test data
+      - name: Run nf-test
         run: |
-          nextflow run ${GITHUB_WORKSPACE}/tools/${{ matrix.TEST }} -profile ${{ matrix.profile }},laptop --test --outdir ./results
+          nf-test test \
+            --profile=laptop,${{ matrix.profile }} \
+            tests/tools/${{ matrix.tags }}/*.nf.test \
+            --tap=test.tap
+
+      - uses: pcolby/tap-summary@v1
+        with:
+          path: >-
+            test.tap

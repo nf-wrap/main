@@ -14,7 +14,7 @@ body:
     attributes:
       label: Command used and terminal output
       description: Steps to reproduce the behaviour. Please paste the command you used
-        to launch the pipeline and the output from your terminal.
+        to launch the project and the output from your terminal.
       render: console
       placeholder: "$ nextflow run ...
 
@@ -30,7 +30,7 @@ body:
         if the extension is not allowed.
 
         Your verbose log file `.nextflow.log` is often useful _(this is a hidden file
-        in the directory where you launched the pipeline)_ as well as custom Nextflow
+        in the directory where you launched the project)_ as well as custom Nextflow
         configuration files.
 
         "
