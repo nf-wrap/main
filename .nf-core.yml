@@ -1,5 +1,6 @@
 repository_type: pipeline
 lint:
+  actions_ci: False
   files_exist:
     - .github/.dockstore.yml
     - .github/ISSUE_TEMPLATE/config.yml
@@ -14,14 +15,15 @@ lint:
     - conf/test_full.config
     - docs/images/nf-core-main_logo_dark.png
     - docs/images/nf-core-main_logo_light.png
-  nextflow_config:
-    - manifest.name
-    - manifest.homePage
   files_unchanged:
-    - .github/workflows/branch.yml
     - .github/CONTRIBUTING.md
     - .github/ISSUE_TEMPLATE/bug_report.yml
     - .github/ISSUE_TEMPLATE/feature_request.yml
     - .github/PULL_REQUEST_TEMPLATE.md
+    - .github/workflows/branch.yml
+    - .github/workflows/linting.yml
+    - .github/workflows/linting_comment.yml
     - .gitignore
-  actions_ci: False
+  nextflow_config:
+    - manifest.name
+    - manifest.homePage
