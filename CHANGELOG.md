@@ -9,6 +9,8 @@ Initial release of nf-wrap/main, created with the [nf-core](https://nf-co.re/) t
 
 ### `Added`
 
+- Fastqc
+
 ### `Fixed`
 
 ### `Dependencies`
