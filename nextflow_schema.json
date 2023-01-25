@@ -10,22 +10,44 @@
             "type": "object",
             "fa_icon": "fas fa-terminal",
             "description": "Define where the pipeline should find input data and save output data.",
-            "required": ["input", "outdir"],
+            "required": ["tools", "outdir"],
             "properties": {
                 "input": {
                     "type": "string",
                     "format": "file-path",
-                    "mimetype": "text/csv",
-                    "pattern": "^\\S+\\.csv$",
-                    "schema": "assets/schema_input.json",
                     "description": "Path to comma-separated file containing information about the samples in the experiment.",
                     "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
                     "fa_icon": "fas fa-file-csv"
                 },
+                "tools": {
+                    "type": "string",
+                    "fa_icon": "fas fa-hammer",
+                    "enum": ["fastqc"],
+                    "description": "Which tool to use"
+                },
+                "args": {
+                    "type": "string",
+                    "fa_icon": "fas fa-cog",
+                    "description": "Specify any additional args",
+                    "help_text": "use = on the command line i.e.: --args=\"--quiet\""
+                },
+                "args2": {
+                    "type": "string",
+                    "fa_icon": "fas fa-cog",
+                    "description": "Specify any additional args",
+                    "help_text": "use = on the command line i.e.: --args2=\"--quiet\""
+                },
+                "args3": {
+                    "type": "string",
+                    "fa_icon": "fas fa-cog",
+                    "description": "Specify any additional args",
+                    "help_text": "use = on the command line i.e.: --args3=\"--quiet\""
+                },
                 "test": {
                     "type": "boolean",
                     "fa_icon": "fas fa-vial",
-                    "description": "Use to do test"
+                    "description": "Use to do test",
+                    "hidden": true
                 },
                 "outdir": {
                     "type": "string",

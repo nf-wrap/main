@@ -10,6 +10,24 @@
 --input '[path to input]'
 ```
 
+## args
+
+```bash
+--args="foo -baz --bar"
+```
+
+## args2
+
+```bash
+--args2="foo -baz --bar"
+```
+
+## args3
+
+```bash
+--args3="foo -baz --bar"
+```
+
 ## Running the project
 
 The typical command for running the project is as follows:

@@ -81,7 +81,6 @@ class NfcoreSchema {
             'stdin',
             'stub',
             'stub-run',
-            'test',
             'w',
             'with-charliecloud',
             'with-conda',

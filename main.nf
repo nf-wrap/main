@@ -28,7 +28,7 @@ include { MAIN } from './workflows/main'
 //
 // WORKFLOW: Run main nf-wrap/main analysis pipeline
 //
-workflow NFWRAP_MAIN {
+workflow NFWRAP {
     MAIN ()
 }
 
@@ -43,7 +43,7 @@ workflow NFWRAP_MAIN {
 // See: https://github.com/nf-core/rnaseq/issues/619
 //
 workflow {
-    NFWRAP_MAIN ()
+    NFWRAP ()
 }
 
 /*
