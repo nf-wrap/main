@@ -301,6 +301,11 @@ class NfcoreTemplate {
         String.format(
             """\n
             ${dashedLine(monochrome_logs)}
+                                                    ${colors.green} __${colors.reset}
+            ${colors.blue}        ___            __   __   __     ${colors.green}/| \\${colors.reset}
+            ${colors.blue}  |\\ | |__  __ \\    / |__) |__| |__|   ${colors.green}/ |__\\${colors.reset}
+            ${colors.blue}  | \\| |        \\/\\/  |  \\ |  | |      ${colors.green}\\  \\ /${colors.reset}
+                                                    ${colors.green}\\__/${colors.reset}
             ${colors.purple}  ${workflow.manifest.name} ${workflow_version}${colors.reset}
             ${dashedLine(monochrome_logs)}
             """.stripIndent()
