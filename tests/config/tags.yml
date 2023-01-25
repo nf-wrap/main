@@ -1,5 +1,9 @@
-# fastqc
+# fastp
+fastp:
+  - modules/nf-core/fastp/main.nf
+  - tools/fastp/main.nf
 
+# fastqc
 fastqc:
   - modules/nf-core/fastqc/main.nf
   - tools/fastqc/main.nf
