@@ -2,9 +2,9 @@ name: nf-wrap CI
 # This workflow runs wrappers with minimal test dataset to check that it completes without any syntax errors
 on:
   push:
-    branches: [master]
+    branches: [dev]
   pull_request:
-    branches: [master]
+    branches: [dev]
 
 env:
   NXF_ANSI_LOG: false

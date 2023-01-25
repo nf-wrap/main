@@ -4,20 +4,25 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
+// def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 
 // Validate input parameters
-WorkflowMain.initialise(params, log)
+// WorkflowMain.initialise(params, log)
 
 // Check input path parameters to see if they exist
-def checkPathParamList = [ params.input ]
-for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
+// def checkPathParamList = [
+//     params.input,
+//     params.test
+// ]
+// for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
-// Check mandatory parameters
-if (params.input) { input = file(params.input) } else { exit 1, 'Input not specified!' }
+// // Check mandatory parameters
+// if (params.input) { input = file(params.input) } else { exit 1, 'Input not specified!' }
+
+include { RUN_FASTQC } from '../tools/fastqc/main.nf'
 
 workflow MAIN {
-
+    if (params.tools && params.tools == 'fastqc') RUN_FASTQC( params.input )
 }
 
 /*
