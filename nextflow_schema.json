@@ -1,8 +1,8 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://raw.githubusercontent.com/nf-wrap/main/master/nextflow_schema.json",
-    "title": "nf-wrap/main pipeline parameters",
-    "description": "Main repo for nf-wrap",
+    "$id": "https://raw.githubusercontent.com/nf-wrap/main/main/nextflow_schema.json",
+    "title": "nf-wrap parameters",
+    "description": "Wrappers for nf-core modules",
     "type": "object",
     "definitions": {
         "input_output_options": {

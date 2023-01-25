@@ -24,6 +24,10 @@ lint:
     - .github/workflows/linting.yml
     - .github/workflows/linting_comment.yml
     - .gitignore
+    - assets/email_template.html
+    - lib/NfcoreSchema.groovy
+    - lib/NfcoreTemplate.groovy
   nextflow_config:
     - manifest.name
     - manifest.homePage
+  schema_lint: False
