@@ -1,0 +1,9 @@
+{
+    "Should run without failures": {
+        "content": [
+            "test_fastqc.html:md5,0dd01ef6e8655a8524dd3e6357ce9611",
+            "versions.yml:md5,b12a5aa87e5bddcf730746e96b769cf0"
+        ],
+        "timestamp": "2023-01-25T15:38:10+0000"
+    }
+}
