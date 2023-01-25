@@ -3,4 +3,3 @@
 fastqc:
   - modules/nf-core/fastqc/main.nf
   - tools/fastqc/main.nf
-  - tools/fastqc/nextflow.config

@@ -1,19 +1,26 @@
 nextflow_pipeline {
 
-    name "Test Workflow main.nf"
-    script "tools/fastqc/main.nf"
+    name "Test --tools fastqc"
+    script "main.nf"
 
     test("Should run without failures") {
 
         when {
             params {
+                outdir = "$outputDir"
                 test = true
-                outdir = "results"
+                tools = 'fastqc'
             }
         }
 
         then {
             assert workflow.success
+            assert new File("$outputDir/fastqc/test_fastqc.zip").exists()
+
+            assert snapshot(
+                "$outputDir/fastqc/test_fastqc.html",
+                "$outputDir/fastqc/versions.yml"
+            ).match()
         }
 
     }
