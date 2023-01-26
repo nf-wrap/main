@@ -1,9 +1,11 @@
 {
     "Should run without failures": {
         "content": [
-            "test_fastqc.html:md5,0dd01ef6e8655a8524dd3e6357ce9611",
+            "test_pair_1_fastqc.html:md5,048aa010079470b92f1ab7a5ba6a09fc",
+            "test_pair_2_fastqc.html:md5,644b4a44ed4124d78b8f3580eca0c5c6",
+            "test_single_fastqc.html:md5,74e036068ce7ba9ef1b8f60351df6a3e",
             "versions.yml:md5,b12a5aa87e5bddcf730746e96b769cf0"
         ],
-        "timestamp": "2023-01-25T15:38:10+0000"
+        "timestamp": "2023-01-26T16:33:57+0000"
     }
 }

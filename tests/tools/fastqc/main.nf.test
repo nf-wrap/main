@@ -15,13 +15,16 @@ nextflow_pipeline {
 
         then {
             assert workflow.success
-            assert new File("$outputDir/fastqc/test_fastqc.zip").exists()
+            assert new File("$outputDir/fastqc/test_pair/test_pair_1_fastqc.zip").exists()
+            assert new File("$outputDir/fastqc/test_pair/test_pair_2_fastqc.zip").exists()
+            assert new File("$outputDir/fastqc/test_single/test_single_fastqc.zip").exists()
 
             assert snapshot(
-                "$outputDir/fastqc/test_fastqc.html",
+                "$outputDir/fastqc/test_pair/test_pair_1_fastqc.html",
+                "$outputDir/fastqc/test_pair/test_pair_2_fastqc.html",
+                "$outputDir/fastqc/test_single/test_single_fastqc.html",
                 "$outputDir/fastqc/versions.yml"
             ).match()
         }
-
     }
 }

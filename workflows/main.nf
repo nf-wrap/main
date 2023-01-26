@@ -41,7 +41,12 @@ if (params.tools && params.tools in ['fastp', 'fastqc']) {
             .mix(end_input.pair.map{ meta, reads -> [ meta + [single_end: false], reads ] })
     } else if (params.test) {
         // Test data
-        input = Channel.fromPath(params.test_data['sarscov2']['illumina']['test_1_fastq_gz']).map{ it -> [ [ id:'test', single_end: true ], it ] }
+        input = Channel.fromPath(params.test_data['sarscov2']['illumina']['test_1_fastq_gz'])
+            .map{ it -> [ [ id:'test_single', single_end: true ], it ] }
+            .mix(Channel.fromPath(params.test_data['sarscov2']['illumina']['test_1_fastq_gz']).map{ it -> [ [ id:'test_pair' ], it ] }
+                .join(Channel.fromPath(params.test_data['sarscov2']['illumina']['test_2_fastq_gz']).map{ it -> [ [ id:'test_pair' ], it ] })
+                .map{ meta, fastq_1, fastq_2 -> [ meta + [single_end: false], [fastq_1, fastq_2] ] })
+
     } else {
         // This should not happen
         log.warn("No input data provided!")
