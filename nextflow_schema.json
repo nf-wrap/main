@@ -21,7 +21,7 @@
                 "tools": {
                     "type": "string",
                     "fa_icon": "fas fa-hammer",
-                    "enum": ["fastp", "fastqc"],
+                    "enum": ["fastp", "fastqc", "trimgalore"],
                     "description": "Which tool to use"
                 },
                 "args": {
