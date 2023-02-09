@@ -1,0 +1,10 @@
+{
+    "Should run without failures": {
+        "content": [
+            "test_1.fastq.gz.md5:md5,63a3f187d06ae5cffe77fcd39bbdd63a",
+            "test_2.fastq.gz.md5:md5,055dc46636836dbd1d9ede2e6ce8cd4e",
+            "versions.yml:md5,332de5d2686783d747259535800a11ec"
+        ],
+        "timestamp": "2023-02-09T13:57:05+0000"
+    }
+}
