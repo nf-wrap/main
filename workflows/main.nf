@@ -29,7 +29,9 @@ if (params.tools && params.tools in ['fastp', 'fastqc', 'trimgalore']) {
     input = Channel.empty()
     // Real input
     // fromFilePairs works also with a single file, and provides a key, which is used later as id in the meta map
-    if (params.input) {
+    if (params.input && params.input.toString().endsWith('csv')) {
+        input = extract_csv(file(params.input, checkIfExists: true))
+    } else if (params.input && !params.input.toString().endsWith('csv')) {
         raw_input = Channel.fromFilePairs(params.input).map{ id, reads -> [ [ id:id ], reads ] }
         end_input = raw_input.branch{ meta, reads ->
             // reads is a list, so use reads.size() to asses number of intervals
@@ -47,7 +49,6 @@ if (params.tools && params.tools in ['fastp', 'fastqc', 'trimgalore']) {
             .mix(Channel.fromPath(params.test_data['sarscov2']['illumina']['test_1_fastq_gz']).map{ it -> [ [ id:'test_pair' ], it ] }
                 .join(Channel.fromPath(params.test_data['sarscov2']['illumina']['test_2_fastq_gz']).map{ it -> [ [ id:'test_pair' ], it ] })
                 .map{ meta, fastq_1, fastq_2 -> [ meta + [single_end: false], [fastq_1, fastq_2] ] })
-
     } else {
         // This should not happen
         log.warn("No input data provided!")
@@ -87,6 +88,49 @@ workflow.onComplete {
     NfcoreTemplate.summary(workflow, params, log)
     if (params.hook_url) {
         NfcoreTemplate.IM_notification(workflow, params, summary_params, projectDir, log)
+    }
+}
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    FUNCTIONS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+// Function to extract information (meta data + file(s)) from csv file(s)
+def extract_csv(csv_file) {
+    // check that the sample sheet is not 1 line or less, because it'll skip all subsequent checks if so.
+    file(csv_file).withReader('UTF-8') { reader ->
+        def line, samplesheet_line_count = 0;
+        while ((line = reader.readLine()) != null) {samplesheet_line_count++}
+        if (samplesheet_line_count < 2) {
+            log.error "Samplesheet had less than two lines. The sample sheet must be a csv file with a header, so at least two lines."
+            System.exit(1)
+        }
+    }
+
+    Channel.of(csv_file).splitCsv(header: true)
+        .map{ row ->
+
+        def meta = [:]
+
+        // Meta data to identify samplesheet
+        // Sample is mandatory
+        if (row.sample)  meta.id  = row.sample.toString()
+
+        if (row.fastq_1 && row.fastq_2) {
+            def fastq_1     = file(row.fastq_1, checkIfExists: true)
+            def fastq_2     = file(row.fastq_2, checkIfExists: true)
+
+            return [ meta, [ fastq_1, fastq_2 ] ]
+        } else if (row.fastq_1) {
+            meta.single_end = true
+            def fastq_1     = file(row.fastq_1, checkIfExists: true)
+
+            return [ meta, fastq_1 ]
+        } else {
+            log.error "Missing or unknown field in csv file header. Please check your samplesheet"
+            System.exit(1)
+        }
     }
 }
 
