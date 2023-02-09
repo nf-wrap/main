@@ -19,11 +19,12 @@
 // // Check mandatory parameters
 // if (params.input) { input = file(params.input) } else { exit 1, 'Input not specified!' }
 
-include { RUN_FASTP  } from '../tools/fastp/main.nf'
-include { RUN_FASTQC } from '../tools/fastqc/main.nf'
+include { RUN_FASTP      } from '../tools/fastp/main.nf'
+include { RUN_FASTQC     } from '../tools/fastqc/main.nf'
+include { RUN_TRIMGALORE } from '../tools/trimgalore/main.nf'
 
 // For tools that use FASTQ files as input
-if (params.tools && params.tools in ['fastp', 'fastqc']) {
+if (params.tools && params.tools in ['fastp', 'fastqc', 'trimgalore']) {
     // Get real input file or test data
     input = Channel.empty()
     // Real input
@@ -63,6 +64,9 @@ workflow MAIN {
                 break
             case 'fastqc':
                 RUN_FASTQC(input)
+                break
+            case 'trimgalore':
+                RUN_TRIMGALORE(input)
                 break
             default:
                 println "No tool selected"
