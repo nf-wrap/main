@@ -9,3 +9,9 @@ fastqc:
   - modules/nf-core/fastqc/main.nf
   - tests/tools/fastqc/main.nf.test
   - tools/fastqc/main.nf
+
+# trimgalore
+trimgalore:
+  - modules/nf-core/trimgalore/main.nf
+  - tests/tools/trimgalore/main.nf.test
+  - tools/trimgalore/main.nf
