@@ -1,0 +1,26 @@
+nextflow_pipeline {
+
+    name "Test --tools md5sum"
+    script "main.nf"
+
+    test("Should run without failures") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+                test = true
+                tools = 'md5sum'
+            }
+        }
+
+        then {
+            assert workflow.success
+
+            assert snapshot(
+                "$outputDir/md5sum/test_1.fastq/test_1.fastq.gz.md5",
+                "$outputDir/md5sum/test_2.fastq/test_2.fastq.gz.md5",
+                "$outputDir/md5sum/versions.yml"
+            ).match()
+        }
+    }
+}
