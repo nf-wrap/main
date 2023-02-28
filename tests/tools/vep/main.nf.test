@@ -1,0 +1,27 @@
+nextflow_pipeline {
+
+    name "Test --tools vep"
+    script "main.nf"
+
+    test("Should run without failures") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+                test = true
+                tools = 'vep'
+                genome = 'WBcel235'
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert new File("$outputDir/ensemblvep/test_vcf_gz/test_VEP.ann.summary.html").exists()
+            assert new File("$outputDir/ensemblvep/test_vcf_gz/test_VEP.ann.vcf.gz").exists()
+
+            assert snapshot(
+                "$outputDir/ensemblvep/versions.yml"
+            ).match()
+        }
+    }
+}

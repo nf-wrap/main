@@ -15,3 +15,11 @@ trimgalore:
   - modules/nf-core/trimgalore/main.nf
   - tests/tools/trimgalore/main.nf.test
   - tools/trimgalore/main.nf
+
+# vep
+vep:
+  - conf/ensemblvep.config
+  - modules/nf-core/ensemblvep/main.nf
+  - modules/nf-core/tabix/main.nf
+  - subworkflows/nf-core/vcf_annotate_ensemblvep/main.nf
+  - tools/vep/main.nf

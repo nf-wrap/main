@@ -17,6 +17,12 @@ nextflow.enable.dsl = 2
 
 WorkflowMain.initialise(workflow, params, log)
 
+params.fasta             = WorkflowMain.getGenomeAttribute(params, 'fasta')
+params.vep_cache_version = WorkflowMain.getGenomeAttribute(params, 'vep_cache_version')
+params.vep_genome        = WorkflowMain.getGenomeAttribute(params, 'vep_genome')
+params.vep_species       = WorkflowMain.getGenomeAttribute(params, 'vep_species')
+params.vep_version       = WorkflowMain.getGenomeAttribute(params, 'vep_version')
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     NAMED WORKFLOW FOR PIPELINE

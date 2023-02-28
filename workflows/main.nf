@@ -22,6 +22,7 @@
 include { RUN_FASTP      } from '../tools/fastp/main.nf'
 include { RUN_FASTQC     } from '../tools/fastqc/main.nf'
 include { RUN_TRIMGALORE } from '../tools/trimgalore/main.nf'
+include { RUN_VEP        } from '../tools/vep/main.nf'
 
 // For tools that use FASTQ files as input
 if (params.tools && params.tools in ['fastp', 'fastqc', 'trimgalore']) {
@@ -32,7 +33,7 @@ if (params.tools && params.tools in ['fastp', 'fastqc', 'trimgalore']) {
     if (params.input && params.input.toString().endsWith('csv')) {
         input = extract_csv(file(params.input, checkIfExists: true))
     } else if (params.input && !params.input.toString().endsWith('csv')) {
-        raw_input = Channel.fromFilePairs(params.input).map{ id, reads -> [ [ id:id ], reads ] }
+        raw_input = Channel.fromFilePairs(params.input, size: -1).map{ id, reads -> [ [ id:id ], reads ] }
         end_input = raw_input.branch{ meta, reads ->
             // reads is a list, so use reads.size() to asses number of intervals
             single:   reads.size() <= 1
@@ -53,6 +54,23 @@ if (params.tools && params.tools in ['fastp', 'fastqc', 'trimgalore']) {
         // This should not happen
         log.warn("No input data provided!")
     }
+// For tools that use VCF files as input
+} else if (params.tools && params.tools in ['vep']) {
+    // Get real input file or test data
+    input = Channel.empty()
+    // Real input
+    if (params.input && params.input.toString().endsWith('csv')) {
+        input = extract_csv(file(params.input, checkIfExists: true))
+    } else if (params.input && !params.input.toString().endsWith('csv')) {
+        input = Channel.fromPath(params.input).map{ vcf -> [ [ id:vcf.simpleName() ], vcf ] }
+    } else if (params.test) {
+        // Test data
+        input = Channel.fromPath(params.test_data['sarscov2']['illumina']['test_vcf_gz'])
+            .map{ it -> [ [ id:'test_vcf_gz' ], it ] }
+    } else {
+        // This should not happen
+        log.warn("No input data provided!")
+    }
 
 }
 
@@ -61,13 +79,23 @@ workflow MAIN {
         switch (params.tools) {
             case 'fastp':
                 adapter = params.adapter ? Channel.fromPath(params.adapter).collect() : Channel.value([])
-                RUN_FASTP(input, adapter, params.save_trimmed_fail, params.save_merged)
+                save_trimmed_fail = params.save_trimmed_fail ? true : false
+                save_merged = params.save_merged ? true : false
+                RUN_FASTP(input, adapter, save_trimmed_fail, save_merged)
                 break
             case 'fastqc':
                 RUN_FASTQC(input)
                 break
             case 'trimgalore':
                 RUN_TRIMGALORE(input)
+                break
+            case 'vep':
+                vep_cache_version  = params.vep_cache_version  ?: Channel.empty()
+                vep_genome         = params.vep_genome         ?: Channel.empty()
+                vep_species        = params.vep_species        ?: Channel.empty()
+                vep_cache          = params.vep_cache          ? Channel.fromPath(params.vep_cache).collect() : []
+                vep_fasta          = params.vep_include_fasta  ? Channel.fromPath(params.fasta).collect() : []
+                RUN_VEP(input, vep_fasta, vep_genome, vep_species, vep_cache_version, vep_cache, [])
                 break
             default:
                 println "No tool selected"
@@ -127,6 +155,10 @@ def extract_csv(csv_file) {
             def fastq_1     = file(row.fastq_1, checkIfExists: true)
 
             return [ meta, fastq_1 ]
+        } else if (row.vcf) {
+            def vcf     = file(row.vcf, checkIfExists: true)
+
+            return [ meta, vcf ]
         } else {
             log.error "Missing or unknown field in csv file header. Please check your samplesheet"
             System.exit(1)
