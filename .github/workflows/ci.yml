@@ -37,6 +37,9 @@ jobs:
       matrix:
         tags: ["${{ fromJson(needs.changes.outputs.wrap) }}"]
         profile: ["docker", "singularity", "conda"]
+        exclude:
+          - profile: "conda"
+            tags: vep
     steps:
       - name: Check out code
         uses: actions/checkout@v3
