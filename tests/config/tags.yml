@@ -10,6 +10,12 @@ fastqc:
   - tests/tools/fastqc/main.nf.test
   - tools/fastqc/main.nf
 
+# md5sum
+md5sum:
+  - modules/nf-core/md5sum/main.nf
+  - tests/tools/md5sum/main.nf.test
+  - tools/md5sum/main.nf
+
 # trimgalore
 trimgalore:
   - modules/nf-core/trimgalore/main.nf

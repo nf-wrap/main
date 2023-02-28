@@ -21,11 +21,12 @@
 
 include { RUN_FASTP      } from '../tools/fastp/main.nf'
 include { RUN_FASTQC     } from '../tools/fastqc/main.nf'
+include { RUN_MD5SUM     } from '../tools/md5sum/main.nf'
 include { RUN_TRIMGALORE } from '../tools/trimgalore/main.nf'
 include { RUN_VEP        } from '../tools/vep/main.nf'
 
 // For tools that use FASTQ files as input
-if (params.tools && params.tools in ['fastp', 'fastqc', 'trimgalore']) {
+if (params.tools && params.tools in ['fastp', 'fastqc', 'md5sum', 'trimgalore']) {
     // Get real input file or test data
     input = Channel.empty()
     // Real input
@@ -86,6 +87,10 @@ workflow MAIN {
             case 'fastqc':
                 RUN_FASTQC(input)
                 break
+            case 'md5sum':
+                input = input.map{ meta, files -> files }.flatten().map{ file -> [ [id:file.baseName], file ] }
+                RUN_MD5SUM(input)
+                break
             case 'trimgalore':
                 RUN_TRIMGALORE(input)
                 break
@@ -143,7 +148,7 @@ def extract_csv(csv_file) {
 
         // Meta data to identify samplesheet
         // Sample is mandatory
-        if (row.sample)  meta.id  = row.sample.toString()
+        if (row.sample) meta.id  = row.sample.toString()
 
         if (row.fastq_1 && row.fastq_2) {
             def fastq_1     = file(row.fastq_1, checkIfExists: true)
