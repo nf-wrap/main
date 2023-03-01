@@ -11,6 +11,7 @@ nextflow_pipeline {
                 test = true
                 tools = 'vep'
                 genome = 'WBcel235'
+                args = "--everything --filter_common --per_gene --total_length --offline --format vcf"
             }
         }
 

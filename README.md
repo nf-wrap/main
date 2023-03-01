@@ -33,7 +33,7 @@ The project is built using [Nextflow](https://www.nextflow.io), a workflow tool 
 
 ## Credits
 
-nf-wrap was originally written by [@maxulysse](https://github.com/maxulysse/), with the help of [@FriederikeHanssen](https://github.com/FriederikeHanssen) and [@Emiller88](https://github.com/Emiller88) for proofing the concept.
+nf-wrap was originally written by [@maxulysse](https://github.com/maxulysse/) from [Seqera Labs](https://seqera.io), with the help of [@FriederikeHanssen](https://github.com/FriederikeHanssen) and [@Emiller88](https://github.com/Emiller88) for proofing the concept.
 
 We thank the following people for their extensive assistance in the development of this project:
 
