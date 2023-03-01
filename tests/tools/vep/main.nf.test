@@ -19,9 +19,11 @@ nextflow_pipeline {
             assert workflow.success
             assert new File("$outputDir/ensemblvep/test_vcf_gz/test_VEP.ann.summary.html").exists()
             assert new File("$outputDir/ensemblvep/test_vcf_gz/test_VEP.ann.vcf.gz").exists()
+            assert new File("$outputDir/ensemblvep/test_vcf_gz/test_VEP.ann.vcf.gz.tbi").exists()
 
             assert snapshot(
-                "$outputDir/ensemblvep/versions.yml"
+                "$outputDir/ensemblvep/versions.yml",
+                "$outputDir/tabix/versions.yml"
             ).match()
         }
     }

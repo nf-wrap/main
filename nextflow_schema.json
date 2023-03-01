@@ -64,7 +64,7 @@
             }
         },
         "fastp_specific_options": {
-            "title": "Fastp specific options",
+            "title": "fastp specific options",
             "type": "object",
             "description": "",
             "default": "",
@@ -85,8 +85,8 @@
             },
             "fa_icon": "fas fa-cut"
         },
-        "annotation": {
-            "title": "Annotation",
+        "ensemblvep_specific_options": {
+            "title": "ensemblVEP specific options",
             "type": "object",
             "description": "",
             "default": "",
@@ -95,7 +95,7 @@
                 "vep_include_fasta": {
                     "type": "boolean",
                     "fa_icon": "fas fa-file",
-                    "description": "Allow usage of fasta file for annotation with VEP",
+                    "description": "Allow usage of fasta file with VEP",
                     "help_text": "By pointing VEP to a FASTA file, it is possible to retrieve reference sequence locally. This enables VEP to retrieve HGVS notations (--hgvs), check the reference sequence given in input data, and construct transcript models from a GFF or GTF file without accessing a database.\n\nFor details, see [here](https://www.ensembl.org/info/docs/tools/vep/script/vep_cache.html#fasta)."
                 },
                 "vep_cache": {
