@@ -17,6 +17,7 @@ nextflow.enable.dsl = 2
 
 WorkflowMain.initialise(workflow, params, log)
 
+params.bwa               = WorkflowMain.getGenomeAttribute(params, 'bwa')
 params.fasta             = WorkflowMain.getGenomeAttribute(params, 'fasta')
 params.vep_cache_version = WorkflowMain.getGenomeAttribute(params, 'vep_cache_version')
 params.vep_genome        = WorkflowMain.getGenomeAttribute(params, 'vep_genome')

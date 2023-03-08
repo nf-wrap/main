@@ -1,0 +1,22 @@
+{
+    "Should run without failures": {
+        "content": [
+            "genome.amb:md5,3a68b8b2287e07dd3f5f95f4344ba76e",
+            "genome.ann:md5,c32e11f6c859f166c7525a9c1d583567",
+            "genome.bwt:md5,0469c30a1e239dd08f68afe66fde99da",
+            "genome.pac:md5,983e3d2cd6f36e2546e6d25a0da78d66",
+            "genome.sa:md5,ab3952cabf026b48cd3eb5bccbb636d1",
+            "versions.yml:md5,8e30e5a416a459b94b80d23eb847534f",
+            "test_pair.sorted.bam:md5,35621cbfe32b5736b15c57204fd13cd0",
+            "test_pair.sorted.bam.bai:md5,dd94a373eaa239d5cee175ecf1cc7664",
+            "test_pair.sorted.bam.flagstat:md5,18d602435a02a4d721b78d1812622159",
+            "test_pair.sorted.bam.idxstats:md5,85d20a901eef23ca50c323638a2eb602",
+            "test_single.sorted.bam:md5,d05ff9734eed1086f78fe68fbf400801",
+            "test_single.sorted.bam.bai:md5,fd5f9ebfcb1e05b023af247dfcf281bb",
+            "test_single.sorted.bam.flagstat:md5,2191911d72575a2358b08b1df64ccb53",
+            "test_single.sorted.bam.stats:md5,5f3454f7dfaa84eda3a8483c6a297965",
+            "test_single.sorted.bam.idxstats:md5,613e048487662c694aa4a2f73ca96a20"
+        ],
+        "timestamp": "2023-03-08T16:55:13+0000"
+    }
+}

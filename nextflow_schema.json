@@ -21,7 +21,7 @@
                 "tools": {
                     "type": "string",
                     "fa_icon": "fas fa-hammer",
-                    "enum": ["fastp", "fastqc", "md5sum", "trimgalore", "vep"],
+                    "enum": ["bwamem", "fastp", "fastqc", "md5sum", "trimgalore", "vep"],
                     "description": "Which tool to use"
                 },
                 "args": {
@@ -118,6 +118,13 @@
                     "default": "GATK.GRCh38",
                     "fa_icon": "fas fa-book",
                     "help_text": "If using a reference genome configured in the pipeline using iGenomes, use this parameter to give the ID for the reference. This is then used to build the full paths for all required reference genome files e.g. `--genome GRCh38`.\n\nSee the [nf-core website docs](https://nf-co.re/usage/reference_genomes) for more details."
+                },
+                "bwa": {
+                    "type": "string",
+                    "fa_icon": "fas fa-copy",
+                    "description": "Path to BWA mem indices.",
+                    "help_text": "If you use AWS iGenomes, this has already been set for you appropriately.\n\nIf you wish to recompute indices available on igenomes, set `--bwa false`.\n\n> **NB** If none provided, will be generated automatically from the FASTA reference. Combine with `--save_reference` to save for future runs.",
+                    "hidden": true
                 },
                 "fasta": {
                     "type": "string",
