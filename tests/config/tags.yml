@@ -1,3 +1,18 @@
+# bwamem
+bwamem:
+  - conf/fastq_align_bwa.config
+  - modules/nf-core/bwa/index/main.nf
+  - modules/nf-core/bwa/mem/main.nf
+  - modules/nf-core/samtools/flagstat/main.nf
+  - modules/nf-core/samtools/idxstats/main.nf
+  - modules/nf-core/samtools/index/main.nf
+  - modules/nf-core/samtools/sort/main.nf
+  - modules/nf-core/samtools/stats/main.nf
+  - subworkflows/nf-core/bam_sort_stats_samtools/main.nf
+  - subworkflows/nf-core/bam_stats_samtools/main.nf
+  - subworkflows/nf-core/fastq_align_bwa/main.nf
+  - tools/fastq_align_bwa/main.nf
+
 # fastp
 fastp:
   - modules/nf-core/fastp/main.nf
@@ -24,8 +39,8 @@ trimgalore:
 
 # vep
 vep:
-  - conf/ensemblvep.config
+  - conf/vcf_annotate_ensemblvep.config
   - modules/nf-core/ensemblvep/main.nf
   - modules/nf-core/tabix/main.nf
   - subworkflows/nf-core/vcf_annotate_ensemblvep/main.nf
-  - tools/vep/main.nf
+  - tools/vcf_annotate_ensemblvep/main.nf
