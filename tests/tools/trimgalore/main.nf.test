@@ -1,0 +1,27 @@
+nextflow_pipeline {
+
+    name "Test --tools trimgalore"
+    script "main.nf"
+
+    test("Should run without failures") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+                test = true
+                tools = 'trimgalore'
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert new File("$outputDir/trimgalore/test_pair/test_pair_1.fastq.gz_trimming_report.txt").exists()
+            assert new File("$outputDir/trimgalore/test_pair/test_pair_1_val_1.fq.gz").exists()
+            assert new File("$outputDir/trimgalore/test_pair/test_pair_2.fastq.gz_trimming_report.txt").exists()
+            assert new File("$outputDir/trimgalore/test_pair/test_pair_2_val_2.fq.gz").exists()
+            assert new File("$outputDir/trimgalore/test_single/test_single.fastq.gz_trimming_report.txt").exists()
+            assert new File("$outputDir/trimgalore/test_single/test_single_trimmed.fq.gz").exists()
+            assert new File("$outputDir/trimgalore/versions.yml").exists()
+        }
+    }
+}

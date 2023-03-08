@@ -1,0 +1,11 @@
+{
+    "Should run without failures": {
+        "content": [
+            "test_pair_1.fastq.gz_trimming_report.txt:md5,38e4cb17a6f76186f9258e73c41e780e",
+            "test_pair_2.fastq.gz_trimming_report.txt:md5,dccc562204af99a6538a05142a4ab65a",
+            "test_single.fastq.gz_trimming_report.txt:md5,0f125d0001c33e4bc698ca479fd4aa18",
+            "versions.yml:md5,0b8a9dd8a66aada1ecb389eccbb5ed0e"
+        ],
+        "timestamp": "2023-02-09T11:38:05+0000"
+    }
+}

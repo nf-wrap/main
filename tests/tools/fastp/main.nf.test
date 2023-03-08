@@ -1,0 +1,33 @@
+nextflow_pipeline {
+
+    name "Test --tools fastp"
+    script "main.nf"
+
+    test("Should run without failures") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+                test = true
+                tools = 'fastp'
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert new File("$outputDir/fastp/test_pair/test_pair.fastp.html").exists()
+            assert new File("$outputDir/fastp/test_pair/test_pair.fastp.log").exists()
+            assert new File("$outputDir/fastp/test_pair/test_pair_1.fastp.fastq.gz").exists()
+            assert new File("$outputDir/fastp/test_pair/test_pair_2.fastp.fastq.gz").exists()
+            assert new File("$outputDir/fastp/test_single/test_single.fastp.fastq.gz").exists()
+            assert new File("$outputDir/fastp/test_single/test_single.fastp.html").exists()
+            assert new File("$outputDir/fastp/test_single/test_single.fastp.log").exists()
+
+            assert snapshot(
+                "$outputDir/fastp/test_pair/test_pair.fastp.json",
+                "$outputDir/fastp/test_single/test_single.fastp.json",
+                "$outputDir/fastp/versions.yml"
+            ).match()
+        }
+    }
+}

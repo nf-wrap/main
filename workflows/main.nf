@@ -4,109 +4,108 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
+// def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 
 // Validate input parameters
-WorkflowMain.initialise(params, log)
+// WorkflowMain.initialise(params, log)
 
-// TODO nf-core: Add all file path parameters for the pipeline to the list below
 // Check input path parameters to see if they exist
-def checkPathParamList = [ params.input, params.multiqc_config, params.fasta ]
-for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
+// def checkPathParamList = [
+//     params.input,
+//     params.test
+// ]
+// for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
-// Check mandatory parameters
-if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input samplesheet not specified!' }
+// // Check mandatory parameters
+// if (params.input) { input = file(params.input) } else { exit 1, 'Input not specified!' }
 
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    CONFIG FILES
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
+include { RUN_FASTP      } from '../tools/fastp/main.nf'
+include { RUN_FASTQC     } from '../tools/fastqc/main.nf'
+include { RUN_MD5SUM     } from '../tools/md5sum/main.nf'
+include { RUN_TRIMGALORE } from '../tools/trimgalore/main.nf'
+include { RUN_VEP        } from '../tools/vep/main.nf'
 
-ch_multiqc_config          = Channel.fromPath("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
-ch_multiqc_custom_config   = params.multiqc_config ? Channel.fromPath( params.multiqc_config, checkIfExists: true ) : Channel.empty()
-ch_multiqc_logo            = params.multiqc_logo   ? Channel.fromPath( params.multiqc_logo, checkIfExists: true ) : Channel.empty()
-ch_multiqc_custom_methods_description = params.multiqc_methods_description ? file(params.multiqc_methods_description, checkIfExists: true) : file("$projectDir/assets/methods_description_template.yml", checkIfExists: true)
+// For tools that use FASTQ files as input
+if (params.tools && params.tools in ['fastp', 'fastqc', 'md5sum', 'trimgalore']) {
+    // Get real input file or test data
+    input = Channel.empty()
+    // Real input
+    // fromFilePairs works also with a single file, and provides a key, which is used later as id in the meta map
+    if (params.input && params.input.toString().endsWith('csv')) {
+        input = extract_csv(file(params.input, checkIfExists: true))
+    } else if (params.input && !params.input.toString().endsWith('csv')) {
+        raw_input = Channel.fromFilePairs(params.input, size: -1).map{ id, reads -> [ [ id:id ], reads ] }
+        end_input = raw_input.branch{ meta, reads ->
+            // reads is a list, so use reads.size() to asses number of intervals
+            single:   reads.size() <= 1
+                return [ meta, reads ]
+            pair: reads.size() > 1
+        }
 
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    IMPORT LOCAL MODULES/SUBWORKFLOWS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
+        input = end_input.single.map{ meta, reads -> [ meta + [single_end: true], reads ] }
+            .mix(end_input.pair.map{ meta, reads -> [ meta + [single_end: false], reads ] })
+    } else if (params.test) {
+        // Test data
+        input = Channel.fromPath(params.test_data['sarscov2']['illumina']['test_1_fastq_gz'])
+            .map{ it -> [ [ id:'test_single', single_end: true ], it ] }
+            .mix(Channel.fromPath(params.test_data['sarscov2']['illumina']['test_1_fastq_gz']).map{ it -> [ [ id:'test_pair' ], it ] }
+                .join(Channel.fromPath(params.test_data['sarscov2']['illumina']['test_2_fastq_gz']).map{ it -> [ [ id:'test_pair' ], it ] })
+                .map{ meta, fastq_1, fastq_2 -> [ meta + [single_end: false], [fastq_1, fastq_2] ] })
+    } else {
+        // This should not happen
+        log.warn("No input data provided!")
+    }
+// For tools that use VCF files as input
+} else if (params.tools && params.tools in ['vep']) {
+    // Get real input file or test data
+    input = Channel.empty()
+    // Real input
+    if (params.input && params.input.toString().endsWith('csv')) {
+        input = extract_csv(file(params.input, checkIfExists: true))
+    } else if (params.input && !params.input.toString().endsWith('csv')) {
+        input = Channel.fromPath(params.input).map{ vcf -> [ [ id:vcf.simpleName() ], vcf ] }
+    } else if (params.test) {
+        // Test data
+        input = Channel.fromPath(params.test_data['sarscov2']['illumina']['test_vcf_gz'])
+            .map{ it -> [ [ id:'test_vcf_gz' ], it ] }
+    } else {
+        // This should not happen
+        log.warn("No input data provided!")
+    }
 
-//
-// SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
-//
-include { INPUT_CHECK } from '../subworkflows/local/input_check'
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    IMPORT NF-CORE MODULES/SUBWORKFLOWS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-//
-// MODULE: Installed directly from nf-core/modules
-//
-include { FASTQC                      } from '../modules/nf-core/fastqc/main'
-include { MULTIQC                     } from '../modules/nf-core/multiqc/main'
-include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/custom/dumpsoftwareversions/main'
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    RUN MAIN WORKFLOW
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-// Info required for completion email and summary
-def multiqc_report = []
+}
 
 workflow MAIN {
-
-    ch_versions = Channel.empty()
-
-    //
-    // SUBWORKFLOW: Read in samplesheet, validate and stage input files
-    //
-    INPUT_CHECK (
-        ch_input
-    )
-    ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
-
-    //
-    // MODULE: Run FastQC
-    //
-    FASTQC (
-        INPUT_CHECK.out.reads
-    )
-    ch_versions = ch_versions.mix(FASTQC.out.versions.first())
-
-    CUSTOM_DUMPSOFTWAREVERSIONS (
-        ch_versions.unique().collectFile(name: 'collated_versions.yml')
-    )
-
-    //
-    // MODULE: MultiQC
-    //
-    workflow_summary    = WorkflowMain.paramsSummaryMultiqc(workflow, summary_params)
-    ch_workflow_summary = Channel.value(workflow_summary)
-
-    methods_description    = WorkflowMain.methodsDescriptionText(workflow, ch_multiqc_custom_methods_description)
-    ch_methods_description = Channel.value(methods_description)
-
-    ch_multiqc_files = Channel.empty()
-    ch_multiqc_files = ch_multiqc_files.mix(ch_workflow_summary.collectFile(name: 'workflow_summary_mqc.yaml'))
-    ch_multiqc_files = ch_multiqc_files.mix(ch_methods_description.collectFile(name: 'methods_description_mqc.yaml'))
-    ch_multiqc_files = ch_multiqc_files.mix(CUSTOM_DUMPSOFTWAREVERSIONS.out.mqc_yml.collect())
-    ch_multiqc_files = ch_multiqc_files.mix(FASTQC.out.zip.collect{it[1]}.ifEmpty([]))
-
-    MULTIQC (
-        ch_multiqc_files.collect(),
-        ch_multiqc_config.toList(),
-        ch_multiqc_custom_config.toList(),
-        ch_multiqc_logo.toList()
-    )
-    multiqc_report = MULTIQC.out.report.toList()
+    if (params.tools) {
+        switch (params.tools) {
+            case 'fastp':
+                adapter = params.adapter ? Channel.fromPath(params.adapter).collect() : Channel.value([])
+                save_trimmed_fail = params.save_trimmed_fail ? true : false
+                save_merged = params.save_merged ? true : false
+                RUN_FASTP(input, adapter, save_trimmed_fail, save_merged)
+                break
+            case 'fastqc':
+                RUN_FASTQC(input)
+                break
+            case 'md5sum':
+                input = input.map{ meta, files -> files }.flatten().map{ file -> [ [id:file.baseName], file ] }
+                RUN_MD5SUM(input)
+                break
+            case 'trimgalore':
+                RUN_TRIMGALORE(input)
+                break
+            case 'vep':
+                vep_cache_version  = params.vep_cache_version  ?: Channel.empty()
+                vep_genome         = params.vep_genome         ?: Channel.empty()
+                vep_species        = params.vep_species        ?: Channel.empty()
+                vep_cache          = params.vep_cache          ? Channel.fromPath(params.vep_cache).collect() : []
+                vep_fasta          = params.vep_include_fasta  ? Channel.fromPath(params.fasta).collect() : []
+                RUN_VEP(input, vep_fasta, vep_genome, vep_species, vep_cache_version, vep_cache, [])
+                break
+            default:
+                println "No tool selected"
+        }
+    }
 }
 
 /*
@@ -122,6 +121,53 @@ workflow.onComplete {
     NfcoreTemplate.summary(workflow, params, log)
     if (params.hook_url) {
         NfcoreTemplate.IM_notification(workflow, params, summary_params, projectDir, log)
+    }
+}
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    FUNCTIONS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+// Function to extract information (meta data + file(s)) from csv file(s)
+def extract_csv(csv_file) {
+    // check that the sample sheet is not 1 line or less, because it'll skip all subsequent checks if so.
+    file(csv_file).withReader('UTF-8') { reader ->
+        def line, samplesheet_line_count = 0;
+        while ((line = reader.readLine()) != null) {samplesheet_line_count++}
+        if (samplesheet_line_count < 2) {
+            log.error "Samplesheet had less than two lines. The sample sheet must be a csv file with a header, so at least two lines."
+            System.exit(1)
+        }
+    }
+
+    Channel.of(csv_file).splitCsv(header: true)
+        .map{ row ->
+
+        def meta = [:]
+
+        // Meta data to identify samplesheet
+        // Sample is mandatory
+        if (row.sample) meta.id  = row.sample.toString()
+
+        if (row.fastq_1 && row.fastq_2) {
+            def fastq_1     = file(row.fastq_1, checkIfExists: true)
+            def fastq_2     = file(row.fastq_2, checkIfExists: true)
+
+            return [ meta, [ fastq_1, fastq_2 ] ]
+        } else if (row.fastq_1) {
+            meta.single_end = true
+            def fastq_1     = file(row.fastq_1, checkIfExists: true)
+
+            return [ meta, fastq_1 ]
+        } else if (row.vcf) {
+            def vcf     = file(row.vcf, checkIfExists: true)
+
+            return [ meta, vcf ]
+        } else {
+            log.error "Missing or unknown field in csv file header. Please check your samplesheet"
+            System.exit(1)
+        }
     }
 }
 

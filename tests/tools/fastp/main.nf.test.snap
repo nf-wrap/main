@@ -1,0 +1,10 @@
+{
+    "Should run without failures": {
+        "content": [
+            "test_pair.fastp.json:md5,c8628203ce9fba279f92ecce474fa924",
+            "test_single.fastp.json:md5,c16e7b2e279e5a7aaf5f1d61462b4f4e",
+            "versions.yml:md5,d8ac6260b6a35e2290396404c7072888"
+        ],
+        "timestamp": "2023-01-26T16:33:41+0000"
+    }
+}

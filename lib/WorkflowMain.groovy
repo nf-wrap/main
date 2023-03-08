@@ -1,63 +1,91 @@
 //
-// This file holds several functions specific to the workflow/main.nf in the nf-wrap/main pipeline
+// This file holds several functions specific to the main.nf for nf-wrap
 //
-
-import groovy.text.SimpleTemplateEngine
 
 class WorkflowMain {
 
     //
-    // Check and validate parameters
+    // Citation string for pipeline
     //
-    public static void initialise(params, log) {
-        
-
-        if (!params.fasta) {
-            log.error "Genome fasta file not specified with e.g. '--fasta genome.fa' or via a detectable config file."
-            System.exit(1)
-        }
+    public static String citation(workflow) {
+        return "If you use ${workflow.manifest.name} for your analysis please cite:\n\n" +
+            "* The nf-core framework\n" +
+            "  https://doi.org/10.1038/s41587-020-0439-x\n\n" +
+            "* Software dependencies\n" +
+            "  https://github.com/nf-wrap/main/blob/master/CITATIONS.md"
     }
 
     //
-    // Get workflow summary for MultiQC
+    // Generate help string
     //
-    public static String paramsSummaryMultiqc(workflow, summary) {
-        String summary_section = ''
-        for (group in summary.keySet()) {
-            def group_params = summary.get(group)  // This gets the parameters of that particular group
-            if (group_params) {
-                summary_section += "    <p style=\"font-size:110%\"><b>$group</b></p>\n"
-                summary_section += "    <dl class=\"dl-horizontal\">\n"
-                for (param in group_params.keySet()) {
-                    summary_section += "        <dt>$param</dt><dd><samp>${group_params.get(param) ?: '<span style=\"color:#999999;\">N/A</a>'}</samp></dd>\n"
-                }
-                summary_section += "    </dl>\n"
+    public static String help(workflow, params, log) {
+        def command = "nextflow run ${workflow.manifest.name} --tools fastqc --input sample.fastq.gz -profile docker"
+        def help_string = ''
+        help_string += NfcoreTemplate.logo(workflow, params.monochrome_logs)
+        help_string += NfcoreSchema.paramsHelp(workflow, params, command)
+        help_string += '\n' + citation(workflow) + '\n'
+        help_string += NfcoreTemplate.dashedLine(params.monochrome_logs)
+        return help_string
+    }
+
+    //
+    // Generate parameter summary log string
+    //
+    public static String paramsSummaryLog(workflow, params, log) {
+        def summary_log = ''
+        summary_log += NfcoreTemplate.logo(workflow, params.monochrome_logs)
+        summary_log += NfcoreSchema.paramsSummaryLog(workflow, params)
+        summary_log += '\n' + citation(workflow) + '\n'
+        summary_log += NfcoreTemplate.dashedLine(params.monochrome_logs)
+        return summary_log
+    }
+
+    //
+    // Validate parameters and print summary to screen
+    //
+    public static void initialise(workflow, params, log) {
+        // Print help to screen if required
+        if (params.help) {
+            log.info help(workflow, params, log)
+            System.exit(0)
+        }
+
+        // Print workflow version and exit on --version
+        if (params.version) {
+            String workflow_version = NfcoreTemplate.version(workflow)
+            log.info "${workflow.manifest.name} ${workflow_version}"
+            System.exit(0)
+        }
+
+        // Print parameter summary log to screen
+        log.info paramsSummaryLog(workflow, params, log)
+
+        // Validate workflow parameters via the JSON schema
+        if (params.validate_params) {
+            NfcoreSchema.validateParameters(workflow, params, log)
+        }
+
+        // Check that a -profile or Nextflow config has been provided to run the pipeline
+        NfcoreTemplate.checkConfigProvided(workflow, log)
+
+        // Check that conda channels are set-up correctly
+        if (workflow.profile.tokenize(',').intersect(['conda', 'mamba']).size() >= 1) {
+            Utils.checkCondaChannels(log)
+        }
+
+        // Check AWS batch settings
+        NfcoreTemplate.awsBatch(workflow, params)
+
+    }
+    //
+    // Get attribute from genome config file e.g. fasta
+    //
+    public static Object getGenomeAttribute(params, attribute) {
+        if (params.genomes && params.genome && params.genomes.containsKey(params.genome)) {
+            if (params.genomes[ params.genome ].containsKey(attribute)) {
+                return params.genomes[ params.genome ][ attribute ]
             }
         }
-
-        String yaml_file_text  = "id: '${workflow.manifest.name.replace('/','-')}-summary'\n"
-        yaml_file_text        += "description: ' - this information is collected when the pipeline is started.'\n"
-        yaml_file_text        += "section_name: '${workflow.manifest.name} Workflow Summary'\n"
-        yaml_file_text        += "section_href: 'https://github.com/${workflow.manifest.name}'\n"
-        yaml_file_text        += "plot_type: 'html'\n"
-        yaml_file_text        += "data: |\n"
-        yaml_file_text        += "${summary_section}"
-        return yaml_file_text
+        return null
     }
-
-    public static String methodsDescriptionText(run_workflow, mqc_methods_yaml) {
-        // Convert  to a named map so can be used as with familar NXF ${workflow} variable syntax in the MultiQC YML file
-        def meta = [:]
-        meta.workflow = run_workflow.toMap()
-        meta["manifest_map"] = run_workflow.manifest.toMap()
-
-        meta["doi_text"] = meta.manifest_map.doi ? "(doi: <a href=\'https://doi.org/${meta.manifest_map.doi}\'>${meta.manifest_map.doi}</a>)" : ""
-        meta["nodoi_text"] = meta.manifest_map.doi ? "": "<li>If available, make sure to update the text to include the Zenodo DOI of version of the pipeline used. </li>"
-
-        def methods_text = mqc_methods_yaml.text
-
-        def engine =  new SimpleTemplateEngine()
-        def description_html = engine.createTemplate(methods_text).make(meta)
-
-        return description_html
-    }}
+}
