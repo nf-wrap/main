@@ -23,12 +23,12 @@
 include { BWA_INDEX }      from '../modules/nf-core/bwa/index/main.nf'
 
 // NF-WRAP WRAPPERS
-include { RUN_BWAMEM }     from '../tools/fastq_align_bwa/main.nf'
-include { RUN_FASTP }      from '../tools/fastp/main.nf'
-include { RUN_FASTQC }     from '../tools/fastqc/main.nf'
-include { RUN_MD5SUM }     from '../tools/md5sum/main.nf'
-include { RUN_TRIMGALORE } from '../tools/trimgalore/main.nf'
-include { RUN_VEP }        from '../tools/vcf_annotate_ensemblvep/main.nf'
+include { RUN_BWAMEM }     from '../subworkflows/local/fastq_align_bwa/main.nf'
+include { RUN_FASTP }      from '../subworkflows/local/fastp/main.nf'
+include { RUN_FASTQC }     from '../subworkflows/local/fastqc/main.nf'
+include { RUN_MD5SUM }     from '../subworkflows/local/md5sum/main.nf'
+include { RUN_TRIMGALORE } from '../subworkflows/local/trimgalore/main.nf'
+include { RUN_VEP }        from '../subworkflows/local/vcf_annotate_ensemblvep/main.nf'
 
 if (params.test) {
     params.fasta = params.test_data['sarscov2']['genome']['genome_fasta']

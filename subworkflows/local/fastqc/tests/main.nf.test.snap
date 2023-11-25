@@ -1,0 +1,22 @@
+{
+    "zip": {
+        "content": [
+            "test_fastqc.zip"
+        ],
+        "timestamp": "2023-11-25T14:09:49.673347"
+    },
+    "versions": {
+        "content": [
+            [
+                "versions.yml:md5,0a61fefb0b7384b164c84c6201a3aebc"
+            ]
+        ],
+        "timestamp": "2023-11-25T14:09:49.674722"
+    },
+    "html": {
+        "content": [
+            "test_fastqc.html"
+        ],
+        "timestamp": "2023-11-25T14:09:49.667723"
+    }
+}

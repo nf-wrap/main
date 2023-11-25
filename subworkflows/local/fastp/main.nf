@@ -1,6 +1,6 @@
 // FASTP
 
-include { FASTP } from '../../modules/nf-core/fastp/main.nf'
+include { FASTP } from '../../../modules/nf-core/fastp/main.nf'
 
 workflow RUN_FASTP {
     take:
