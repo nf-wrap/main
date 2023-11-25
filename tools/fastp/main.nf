@@ -11,4 +11,13 @@ workflow RUN_FASTP {
 
     main:
     FASTP(input, adapter, save_trimmed_fail, save_merged)
+
+    emit:
+    html         = FASTP.out.html
+    json         = FASTP.out.json
+    logs         = FASTP.out.log
+    reads        = FASTP.out.reads
+    reads_fail   = FASTP.out.reads_fail
+    reads_merged = FASTP.out.reads_merged
+    versions     = FASTP.out.versions
 }
