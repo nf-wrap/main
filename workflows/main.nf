@@ -4,21 +4,6 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-// def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
-
-// Validate input parameters
-// WorkflowMain.initialise(params, log)
-
-// Check input path parameters to see if they exist
-// def checkPathParamList = [
-//     params.input,
-//     params.test
-// ]
-// for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
-
-// // Check mandatory parameters
-// if (params.input) { input = file(params.input) } else { exit 1, 'Input not specified!' }
-
 include { RUN_FASTP      } from '../tools/fastp/main.nf'
 include { RUN_FASTQC     } from '../tools/fastqc/main.nf'
 include { RUN_MD5SUM     } from '../tools/md5sum/main.nf'
@@ -44,13 +29,6 @@ if (params.tools && params.tools in ['fastp', 'fastqc', 'md5sum', 'trimgalore'])
 
         input = end_input.single.map{ meta, reads -> [ meta + [single_end: true], reads ] }
             .mix(end_input.pair.map{ meta, reads -> [ meta + [single_end: false], reads ] })
-    } else if (params.test) {
-        // Test data
-        input = Channel.fromPath(params.test_data['sarscov2']['illumina']['test_1_fastq_gz'])
-            .map{ it -> [ [ id:'test_single', single_end: true ], it ] }
-            .mix(Channel.fromPath(params.test_data['sarscov2']['illumina']['test_1_fastq_gz']).map{ it -> [ [ id:'test_pair' ], it ] }
-                .join(Channel.fromPath(params.test_data['sarscov2']['illumina']['test_2_fastq_gz']).map{ it -> [ [ id:'test_pair' ], it ] })
-                .map{ meta, fastq_1, fastq_2 -> [ meta + [single_end: false], [fastq_1, fastq_2] ] })
     } else {
         // This should not happen
         log.warn("No input data provided!")
