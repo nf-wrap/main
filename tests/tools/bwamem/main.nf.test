@@ -1,0 +1,39 @@
+nextflow_pipeline {
+
+    name "Test --tools bwamem"
+    script "main.nf"
+
+    test("Should run without failures") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+                test = true
+                tools = 'bwamem'
+            }
+        }
+
+        then {
+            assert workflow.success
+            assert new File("$outputDir/samtools/versions.yml").exists()
+
+            assert snapshot(
+                "$outputDir/bwa/fasta/bwa/genome.amb",
+                "$outputDir/bwa/fasta/bwa/genome.ann",
+                "$outputDir/bwa/fasta/bwa/genome.bwt",
+                "$outputDir/bwa/fasta/bwa/genome.pac",
+                "$outputDir/bwa/fasta/bwa/genome.sa",
+                "$outputDir/bwa/versions.yml",
+                "$outputDir/samtools/test_pair/test_pair.sorted.bam",
+                "$outputDir/samtools/test_pair/test_pair.sorted.bam.bai",
+                "$outputDir/samtools/test_pair/test_pair.sorted.bam.flagstat",
+                "$outputDir/samtools/test_pair/test_pair.sorted.bam.idxstats",
+                "$outputDir/samtools/test_single/test_single.sorted.bam",
+                "$outputDir/samtools/test_single/test_single.sorted.bam.bai",
+                "$outputDir/samtools/test_single/test_single.sorted.bam.flagstat",
+                "$outputDir/samtools/test_single/test_single.sorted.bam.stats",
+                "$outputDir/samtools/test_single/test_single.sorted.bam.idxstats"
+            ).match()
+        }
+    }
+}

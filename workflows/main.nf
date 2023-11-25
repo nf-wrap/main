@@ -4,14 +4,39 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-include { RUN_FASTP      } from '../tools/fastp/main.nf'
-include { RUN_FASTQC     } from '../tools/fastqc/main.nf'
-include { RUN_MD5SUM     } from '../tools/md5sum/main.nf'
+// def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
+
+// Validate input parameters
+// WorkflowMain.initialise(params, log)
+
+// Check input path parameters to see if they exist
+// def checkPathParamList = [
+//     params.input,
+//     params.test
+// ]
+// for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
+
+// // Check mandatory parameters
+// if (params.input) { input = file(params.input) } else { exit 1, 'Input not specified!' }
+
+// MODULES
+include { BWA_INDEX }      from '../modules/nf-core/bwa/index/main.nf'
+
+// NF-WRAP WRAPPERS
+include { RUN_BWAMEM }     from '../tools/fastq_align_bwa/main.nf'
+include { RUN_FASTP }      from '../tools/fastp/main.nf'
+include { RUN_FASTQC }     from '../tools/fastqc/main.nf'
+include { RUN_MD5SUM }     from '../tools/md5sum/main.nf'
 include { RUN_TRIMGALORE } from '../tools/trimgalore/main.nf'
-include { RUN_VEP        } from '../tools/vep/main.nf'
+include { RUN_VEP }        from '../tools/vcf_annotate_ensemblvep/main.nf'
+
+if (params.test) {
+    params.fasta = params.test_data['sarscov2']['genome']['genome_fasta']
+    params.bwa = null
+}
 
 // For tools that use FASTQ files as input
-if (params.tools && params.tools in ['fastp', 'fastqc', 'md5sum', 'trimgalore']) {
+if (params.tools && params.tools in ['bwamem', 'fastp', 'fastqc', 'md5sum', 'trimgalore']) {
     // Get real input file or test data
     input = Channel.empty()
     // Real input
@@ -27,8 +52,8 @@ if (params.tools && params.tools in ['fastp', 'fastqc', 'md5sum', 'trimgalore'])
             pair: reads.size() > 1
         }
 
-        input = end_input.single.map{ meta, reads -> [ meta + [single_end: true], reads ] }
-            .mix(end_input.pair.map{ meta, reads -> [ meta + [single_end: false], reads ] })
+        input = end_input.single.map{ meta, reads -> [ meta + [ single_end: true ], reads ] }
+            .mix(end_input.pair.map{ meta, reads -> [ meta + [ single_end: false ], reads ] })
     } else {
         // This should not happen
         log.warn("No input data provided!")
@@ -56,6 +81,11 @@ if (params.tools && params.tools in ['fastp', 'fastqc', 'md5sum', 'trimgalore'])
 workflow MAIN {
     if (params.tools) {
         switch (params.tools) {
+            case 'bwamem':
+                fasta = params.test ? Channel.fromPath(params.test_data['sarscov2']['genome']['genome_fasta']) : params.fasta ? Channel.fromPath(params.fasta) : Channel.value([])
+                bwa = params.test ? BWA_INDEX(fasta.map{ fasta -> [ [ id:'fasta' ], fasta ] }).index.collect() : params.bwa ?: BWA_INDEX(fasta.map{ fasta -> [ [ id:'fasta' ], fasta ] }).index.collect()
+                RUN_BWAMEM(input, bwa, false, fasta)
+                break
             case 'fastp':
                 adapter = params.adapter ? Channel.fromPath(params.adapter).collect() : Channel.value([])
                 save_trimmed_fail = params.save_trimmed_fail ? true : false
