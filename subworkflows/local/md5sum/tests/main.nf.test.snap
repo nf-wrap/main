@@ -1,0 +1,24 @@
+{
+    "versions": {
+        "content": [
+            [
+                "versions.yml:md5,e19e1504509a84226be199ebc421e3bb"
+            ]
+        ],
+        "timestamp": "2023-11-27T12:08:52.147455"
+    },
+    "checksum": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "test",
+                        "single_end": true
+                    },
+                    "test_1.fastq.gz.md5:md5,63a3f187d06ae5cffe77fcd39bbdd63a"
+                ]
+            ]
+        ],
+        "timestamp": "2023-11-27T12:08:52.133951"
+    }
+}

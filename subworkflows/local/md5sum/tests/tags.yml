@@ -1,0 +1,2 @@
+nf-wrap/md5sum:
+  - tools/md5sum/**
