@@ -2,9 +2,6 @@ name: nf-wrap CI
 # This workflow runs wrappers with minimal test dataset to check that it completes without any syntax errors
 on:
   pull_request:
-    branches:
-      - main
-      - dev
   release:
     types: [published]
   merge_group:
@@ -55,7 +52,7 @@ jobs:
         NXF_VER:
           - "23.04.0"
           - "latest-everything"
-        exclude:
+        # exclude:
     env:
       NXF_ANSI_LOG: false
     steps:
