@@ -53,9 +53,9 @@ jobs:
           - "23.04.0"
           # - "latest-everything"
         exclude:
-          - fastp
-          - trimgalore
-          - fastqc
+          - tags: "fastp"
+          - tags: "fastqc"
+          - tags: "trimgalore"
     env:
       NXF_ANSI_LOG: false
     steps:
