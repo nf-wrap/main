@@ -1,0 +1,31 @@
+nextflow_workflow {
+
+    name "Test Workflow RUN_MD5SUM"
+    script "../main.nf"
+    workflow "RUN_MD5SUM"
+    tag "nf-wrap/md5sum"
+
+    test("MD5SUM") {
+
+        when {
+            params {
+            }
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [ id:'test', single_end:true ], // meta map
+                    file(params.test_data['sarscov2']['illumina']['test_1_fastq_gz'], checkIfExists: true)
+                ])
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(file(workflow.out.versions[0][1]).name).match("versions") },
+                { assert snapshot(workflow.out.checksum).match("checksum")}
+            )
+        }
+    }
+}

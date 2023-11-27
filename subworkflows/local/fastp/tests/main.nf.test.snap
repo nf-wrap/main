@@ -1,0 +1,66 @@
+{
+    "versions": {
+        "content": [
+            [
+                "versions.yml:md5,7c77c31dcfc021f8d85d267d8b8936df"
+            ]
+        ],
+        "timestamp": "2023-11-25T11:50:40.915718"
+    },
+    "reads": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "test",
+                        "single_end": true
+                    },
+                    "test.fastp.fastq.gz:md5,dc08e42319d0deab088da4d8600aa2bd"
+                ]
+            ]
+        ],
+        "timestamp": "2023-11-25T11:50:40.903104"
+    },
+    "json": {
+        "content": [
+            [
+                [
+                    {
+                        "id": "test",
+                        "single_end": true
+                    },
+                    "test.fastp.json:md5,c852d7a6dba5819e4ac8d9673bedcacc"
+                ]
+            ]
+        ],
+        "timestamp": "2023-11-25T11:50:40.899211"
+    },
+    "html": {
+        "content": [
+            "test.fastp.html"
+        ],
+        "timestamp": "2023-11-25T11:50:40.890972"
+    },
+    "logs": {
+        "content": [
+            "test.fastp.log"
+        ],
+        "timestamp": "2023-11-25T11:50:40.897481"
+    },
+    "reads_fail": {
+        "content": [
+            [
+                
+            ]
+        ],
+        "timestamp": "2023-11-25T11:50:40.907646"
+    },
+    "reads_merged": {
+        "content": [
+            [
+                
+            ]
+        ],
+        "timestamp": "2023-11-25T11:50:40.911819"
+    }
+}

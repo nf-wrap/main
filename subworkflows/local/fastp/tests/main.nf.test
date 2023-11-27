@@ -1,0 +1,43 @@
+nextflow_workflow {
+
+    name "Test Workflow RUN_FASTP"
+    script "../main.nf"
+    workflow "RUN_FASTP"
+    tag "nf-wrap/fastp"
+
+    test("FASTP") {
+
+        when {
+            params {
+            }
+            workflow {
+                """
+                adapter_fasta     = []
+                save_trimmed_fail = false
+                save_merged       = false
+
+                input[0] = Channel.of([
+                    [ id:'test', single_end:true ], // meta map
+                    file(params.test_data['sarscov2']['illumina']['test_1_fastq_gz'], checkIfExists: true)
+                ])
+                input[1] = adapter_fasta
+                input[2] = save_trimmed_fail
+                input[3] = save_merged
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(file(workflow.out.html[0][1]).name).match("html") },
+                { assert snapshot(file(workflow.out.logs[0][1]).name).match("logs") },
+                { assert snapshot(workflow.out.json).match("json")},
+                { assert snapshot(workflow.out.reads).match("reads")},
+                { assert snapshot(workflow.out.reads_fail).match("reads_fail")},
+                { assert snapshot(workflow.out.reads_merged).match("reads_merged")},
+                { assert snapshot(workflow.out.versions).match("versions")}
+            )
+        }
+    }
+}

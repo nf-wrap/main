@@ -1,0 +1,2 @@
+nf-wrap/fastp:
+  - tools/fastp/**

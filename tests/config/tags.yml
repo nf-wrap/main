@@ -1,46 +1,46 @@
-# bwamem
-bwamem:
-  - conf/fastq_align_bwa.config
-  - modules/nf-core/bwa/index/main.nf
-  - modules/nf-core/bwa/mem/main.nf
-  - modules/nf-core/samtools/flagstat/main.nf
-  - modules/nf-core/samtools/idxstats/main.nf
-  - modules/nf-core/samtools/index/main.nf
-  - modules/nf-core/samtools/sort/main.nf
-  - modules/nf-core/samtools/stats/main.nf
-  - subworkflows/nf-core/bam_sort_stats_samtools/main.nf
-  - subworkflows/nf-core/bam_stats_samtools/main.nf
-  - subworkflows/nf-core/fastq_align_bwa/main.nf
-  - tools/fastq_align_bwa/main.nf
+# # bwamem
+# bwamem:
+#   - conf/fastq_align_bwa.config
+#   - modules/nf-core/bwa/index/main.nf
+#   - modules/nf-core/bwa/mem/main.nf
+#   - modules/nf-core/samtools/flagstat/main.nf
+#   - modules/nf-core/samtools/idxstats/main.nf
+#   - modules/nf-core/samtools/index/main.nf
+#   - modules/nf-core/samtools/sort/main.nf
+#   - modules/nf-core/samtools/stats/main.nf
+#   - subworkflows/nf-core/bam_sort_stats_samtools/main.nf
+#   - subworkflows/nf-core/bam_stats_samtools/main.nf
+#   - subworkflows/nf-core/fastq_align_bwa/main.nf
+#   - tools/fastq_align_bwa/main.nf
 
-# fastp
-fastp:
-  - modules/nf-core/fastp/main.nf
-  - tests/tools/fastp/main.nf.test
-  - tools/fastp/main.nf
+# # fastp
+# fastp:
+#   - modules/nf-core/fastp/main.nf
+#   - tests/tools/fastp/main.nf.test
+#   - tools/fastp/main.nf
 
-# fastqc
-fastqc:
-  - modules/nf-core/fastqc/main.nf
-  - tests/tools/fastqc/main.nf.test
-  - tools/fastqc/main.nf
+# # fastqc
+# fastqc:
+#   - modules/nf-core/fastqc/main.nf
+#   - tests/tools/fastqc/main.nf.test
+#   - tools/fastqc/main.nf
 
-# md5sum
-md5sum:
-  - modules/nf-core/md5sum/main.nf
-  - tests/tools/md5sum/main.nf.test
-  - tools/md5sum/main.nf
+# # md5sum
+# md5sum:
+#   - modules/nf-core/md5sum/main.nf
+#   - tests/tools/md5sum/main.nf.test
+#   - tools/md5sum/main.nf
 
-# trimgalore
-trimgalore:
-  - modules/nf-core/trimgalore/main.nf
-  - tests/tools/trimgalore/main.nf.test
-  - tools/trimgalore/main.nf
+# # trimgalore
+# trimgalore:
+#   - modules/nf-core/trimgalore/main.nf
+#   - tests/tools/trimgalore/main.nf.test
+#   - tools/trimgalore/main.nf
 
-# vep
-vep:
-  - conf/vcf_annotate_ensemblvep.config
-  - modules/nf-core/ensemblvep/main.nf
-  - modules/nf-core/tabix/main.nf
-  - subworkflows/nf-core/vcf_annotate_ensemblvep/main.nf
-  - tools/vcf_annotate_ensemblvep/main.nf
+# # vep
+# vep:
+#   - conf/vcf_annotate_ensemblvep.config
+#   - modules/nf-core/ensemblvep/main.nf
+#   - modules/nf-core/tabix/main.nf
+#   - subworkflows/nf-core/vcf_annotate_ensemblvep/main.nf
+#   - tools/vcf_annotate_ensemblvep/main.nf

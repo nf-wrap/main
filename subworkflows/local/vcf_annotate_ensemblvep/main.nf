@@ -1,6 +1,6 @@
 // VEP
 
-include { VCF_ANNOTATE_ENSEMBLVEP } from '../../subworkflows/nf-core/vcf_annotate_ensemblvep/main.nf'
+include { VCF_ANNOTATE_ENSEMBLVEP } from '../../nf-core/vcf_annotate_ensemblvep/main.nf'
 
 workflow RUN_VEP {
     take:
@@ -14,4 +14,12 @@ workflow RUN_VEP {
 
     main:
     VCF_ANNOTATE_ENSEMBLVEP(vcf, vep_genome, vep_species, vep_cache_version, vep_cache, fasta, vep_extra_files)
+
+    emit:
+    json     = VCF_ANNOTATE_ENSEMBLVEP.out.json
+    reports  = VCF_ANNOTATE_ENSEMBLVEP.out.reports
+    tab      = VCF_ANNOTATE_ENSEMBLVEP.out.tab
+    vcf_tbi  = VCF_ANNOTATE_ENSEMBLVEP.out.vcf_tbi
+    versions = VCF_ANNOTATE_ENSEMBLVEP.out.versions
+
 }

@@ -1,0 +1,32 @@
+nextflow_workflow {
+
+    name "Test Workflow RUN_FASTQC"
+    script "../main.nf"
+    workflow "RUN_FASTQC"
+    tag "nf-wrap/fastqc"
+
+    test("FASTQC") {
+
+        when {
+            params {
+            }
+            workflow {
+                """
+                input[0] = Channel.of([
+                    [ id:'test', single_end:true ], // meta map
+                    file(params.test_data['sarscov2']['illumina']['test_1_fastq_gz'], checkIfExists: true)
+                ])
+                """
+            }
+        }
+
+        then {
+            assertAll(
+                { assert workflow.success },
+                { assert snapshot(file(workflow.out.html[0][1]).name).match("html") },
+                { assert snapshot(file(workflow.out.zip[0][1]).name).match("zip") },
+                { assert snapshot(workflow.out.versions).match("versions")}
+            )
+        }
+    }
+}
