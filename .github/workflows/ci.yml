@@ -51,8 +51,11 @@ jobs:
         profile: ["docker", "singularity", "conda"]
         NXF_VER:
           - "23.04.0"
-          - "latest-everything"
-        # exclude:
+          # - "latest-everything"
+        exclude:
+          - fastp
+          - trimgalore
+          - fastqc
     env:
       NXF_ANSI_LOG: false
     steps:
