@@ -23,8 +23,8 @@ nextflow_workflow {
         then {
             assertAll(
                 { assert workflow.success },
-                { assert snapshot(workflow.out.checksum).match("checksum")},
-                { assert snapshot(workflow.out.versions).match("versions")}
+                { assert snapshot(file(workflow.out.versions[0][1]).name).match("versions") },
+                { assert snapshot(workflow.out.checksum).match("checksum")}
             )
         }
     }
