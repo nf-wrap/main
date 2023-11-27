@@ -34,11 +34,6 @@ jobs:
         run: find . -name "tags.yml" -not -path "./.github/*" -exec cat {} + > .github/tags.yml
       - name: debug
         run: cat .github/tags.yml
-      - uses: frouioui/paths-filter@main
-        id: filter
-        with:
-          filters: ".github/tags.yml"
-          token: ""
   nftest:
     name: ${{ matrix.tags }} ${{ matrix.profile }} NF ${{ matrix.NXF_VER }}
     runs-on: ubuntu-latest
