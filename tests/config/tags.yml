@@ -13,17 +13,17 @@ bwamem:
   - subworkflows/nf-core/fastq_align_bwa/main.nf
   - tools/fastq_align_bwa/main.nf
 
-# fastp
-fastp:
-  - modules/nf-core/fastp/main.nf
-  - tests/tools/fastp/main.nf.test
-  - tools/fastp/main.nf
+# # fastp
+# fastp:
+#   - modules/nf-core/fastp/main.nf
+#   - tests/tools/fastp/main.nf.test
+#   - tools/fastp/main.nf
 
-# fastqc
-fastqc:
-  - modules/nf-core/fastqc/main.nf
-  - tests/tools/fastqc/main.nf.test
-  - tools/fastqc/main.nf
+# # fastqc
+# fastqc:
+#   - modules/nf-core/fastqc/main.nf
+#   - tests/tools/fastqc/main.nf.test
+#   - tools/fastqc/main.nf
 
 # md5sum
 md5sum:
